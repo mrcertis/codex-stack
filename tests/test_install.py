@@ -5,11 +5,15 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("installer", ROOT / "scripts/install_config.py")
 installer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(installer)
+start_spec = importlib.util.spec_from_file_location("prepare", ROOT / "skills/stack-start/scripts/prepare_project.py")
+prepare = importlib.util.module_from_spec(start_spec)
+start_spec.loader.exec_module(prepare)
 
 
 class InstallTests(unittest.TestCase):
@@ -48,6 +52,8 @@ class InstallTests(unittest.TestCase):
         output = subprocess.run(command, shell=True, input='{"hook_event_name":"SessionStart"}',
                                 text=True, capture_output=True, check=True)
         self.assertEqual(json.loads(output.stdout)["hookSpecificOutput"]["hookEventName"], "SessionStart")
+        self.assertIn(str(self.home / "skills/stack-start/SKILL.md"), output.stdout)
+        self.assertTrue((self.home / "skills/stack-start/scripts/prepare_project.py").is_file())
         self.install()
         self.assertEqual(hooks, json.loads((self.home / "hooks.json").read_text()))
         backups = list((self.home / "stack-backups").iterdir())
@@ -89,6 +95,25 @@ class InstallTests(unittest.TestCase):
                 self.assertFalse(data)
             else:
                 self.assertEqual(data["hookSpecificOutput"]["hookEventName"], event)
+
+    def test_project_preparation_preserves_installed_set(self):
+        for name in (*prepare.INTERVIEW, "impeccable"):
+            skill = self.home / ".agents/skills" / name / "SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text("existing content")
+        with patch.object(prepare.subprocess, "run") as run:
+            prepare.prepare(self.home)
+            run.assert_not_called()
+        self.assertEqual((self.home / ".agents/skills/impeccable/SKILL.md").read_text(), "existing content")
+
+    def test_project_preparation_refuses_distribution_and_partial_skill(self):
+        with patch.object(prepare.subprocess, "run") as run:
+            with self.assertRaises(ValueError):
+                prepare.prepare(ROOT)
+            (self.home / ".agents/skills/impeccable").mkdir(parents=True)
+            with self.assertRaises(ValueError):
+                prepare.prepare(self.home)
+            run.assert_not_called()
 
 
 if __name__ == "__main__":

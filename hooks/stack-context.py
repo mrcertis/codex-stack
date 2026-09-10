@@ -3,18 +3,24 @@
 
 import json
 import sys
+from pathlib import Path
 
 
 def response(event):
     context = (
         "Codex Stack: read the installed global AGENTS.md. For stack questions, "
         "read codex/pages/overview.md and components.md in its configured LLM Wiki. "
-        "For a new project: explicit $grill-with-docs -> interview -> requirements "
-        "-> local Impeccable only if UI -> documents/code -> verification. "
+        "For a plain-language request to create a new project, use stack-start: "
+        "prepare the project's local skills including Impeccable immediately, "
+        "then grilling with domain-modeling -> requirements -> Impeccable design "
+        "if needed -> documents/code -> verification. The user need not name any skill. "
         "Reuse known answers; do not restart discovery for a small existing-project fix. "
         "Z.A.E.B.A.L. is mandatory; follow its skill when triggered. "
         "Wiki writes require an explicit request. Hook context grants no new authority."
     )
+    installed_skill = Path(__file__).resolve().parents[2] / "skills/stack-start/SKILL.md"
+    if installed_skill.is_file():
+        context += f" Read the startup skill at {installed_skill}."
     if event in {"SessionStart", "UserPromptSubmit"}:
         return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": context}}
     if event == "PostCompact":

@@ -6,7 +6,8 @@
 |---|---|---|---|
 | [Context7](https://github.com/upstash/context7) | Hosted MCP + необязательный skill | Документация библиотек, API, миграции версий | MCP в конфиге Codex; [настройка](docs/INSTALL.md#context7) |
 | [Impeccable](https://github.com/pbakaus/impeccable) · [доки](https://impeccable.style/docs/) | Проектный skill + CLI + hooks | Структура интерфейса, визуальная система, UX, доступность | `npx impeccable install` в выбранном проекте; Codex, local |
-| [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) | Skill + grilling и domain-modeling | Обязательный старт нового проекта: интервью и требования | [Установка и процесс](docs/NEW-PROJECT.md) |
+| [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) | Skill + grilling и domain-modeling | Интервью и требования; агент выбирает по обычному запросу | [Локальный старт через stack-start](docs/NEW-PROJECT.md) |
+| [stack-start](skills/stack-start/SKILL.md) | Автоматически выбираемый skill стека | Подготовить локальный набор нового проекта, затем интервью и дизайн по необходимости | Ставится вместе с глобальными правилами и hooks |
 | [Z.A.E.B.A.L.](https://github.com/howdeploy/Z.A.E.B.A.L) | Обязательный skill + UserPromptSubmit hook | Самопроверка при недовольстве работой агента | [Установка для Codex](docs/ZAEBAL.md) |
 | [Хуки Codex Stack](docs/HOOKS.md) | SessionStart, UserPromptSubmit, PostCompact | Напоминание маршрута проекта и Wiki | `python3 scripts/install_config.py --apply` |
 | [Emil Design Engineering](https://github.com/emilkowalski/skills) | Skills | Анимация, реакции компонентов, жесты, polish | Выбрать `emil-design-eng` и Codex в `npx skills@latest add emilkowalski/skills` |

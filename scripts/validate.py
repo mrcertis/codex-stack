@@ -16,6 +16,7 @@ EXPECTED = {
     "docs/NEW-PROJECT.md", "docs/HOOKS.md", "docs/ZAEBAL.md",
     "docs/SECURITY-CHECK.md", "hooks/stack-context.py",
     "scripts/install_config.py", "tests/test_install.py",
+    "skills/stack-start/SKILL.md", "skills/stack-start/scripts/prepare_project.py",
 }
 errors = []
 for name in sorted(EXPECTED):

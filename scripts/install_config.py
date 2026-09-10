@@ -61,7 +61,9 @@ def atomic_write(path, content):
 
 def install(codex_home, tools_root, wiki_root, apply=False):
     targets = [codex_home / "AGENTS.md", codex_home / "hooks.json",
-               codex_home / "hooks/codex-stack/stack-context.py"]
+               codex_home / "hooks/codex-stack/stack-context.py",
+               codex_home / "skills/stack-start/SKILL.md",
+               codex_home / "skills/stack-start/scripts/prepare_project.py"]
     if (codex_home / "AGENTS.override.md").exists():
         raise ValueError("AGENTS.override.md shadows AGENTS.md; review and archive it explicitly first")
     for path in targets:
@@ -73,7 +75,9 @@ def install(codex_home, tools_root, wiki_root, apply=False):
     template = template.replace("<TOOLS_ROOT>", str(tools_root)).replace("<WIKI_ROOT>", str(wiki_root))
     template = template.replace("~/.codex", str(codex_home))
     contents = [template, json.dumps(merged, ensure_ascii=False, indent=2) + "\n",
-                (ROOT / "hooks/stack-context.py").read_text()]
+                (ROOT / "hooks/stack-context.py").read_text(),
+                (ROOT / "skills/stack-start/SKILL.md").read_text(),
+                (ROOT / "skills/stack-start/scripts/prepare_project.py").read_text()]
     changes = [(path, content) for path, content in zip(targets, contents)
                if not path.exists() or path.read_text() != content]
     for path, _ in changes:
