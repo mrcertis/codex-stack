@@ -10,7 +10,7 @@
 | [gstack](https://github.com/garrytan/gstack) | CLI + skills | План, code review, браузерный QA, выпуск | Общий каталог Tools; `./setup --host codex` |
 | [GSD Core](https://github.com/open-gsd/gsd-core) | CLI + skills + агенты | Большие задачи с этапами и передачей контекста | `npx @opengsd/gsd-core@latest --codex --global` |
 | [RTK](https://github.com/rtk-ai/rtk) | CLI | Сокращение шумного вывода команд | `rtk init -g --codex`; читать `RTK.md` явно |
-| [Graphify](https://github.com/safishamsi/graphify) | CLI + skill | Связи в коде и поиск затрагиваемых частей | Пакет называется `graphifyy`, команда — `graphify` |
+| [Graphify](https://github.com/Graphify-Labs/graphify) | CLI + skill | Связи в коде и поиск затрагиваемых частей | Пакет называется `graphifyy`, команда — `graphify` |
 | [Agentation](https://github.com/benjitaylor/agentation) · [доки](https://www.agentation.com) | React + MCP | Разбор замечаний к выбранным элементам страницы | MCP глобально, компонент в конкретном dev-приложении |
 | [ObsidianDataWeave](https://github.com/howdeploy/ObsidianDataWeave) | Python pipeline | Компиляция и поиск в общей LLM Wiki | Tools + отдельный venv, режим Codex |
 | [researcher](https://github.com/howdeploy/kisa-stack/tree/main/skills/researcher) | Skill | Исследование с источниками и fallback | Из KISA через `$skill-installer`; Tavily не обязателен |

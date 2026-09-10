@@ -164,7 +164,8 @@ RTK.md и правило в AGENTS.md надёжнее предположени�
 
 ## Graphify
 
-Источник: [safishamsi/graphify](https://github.com/safishamsi/graphify).
+Источник: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify)
+(ранее safishamsi/graphify).
 
 ```bash
 uv tool install graphifyy

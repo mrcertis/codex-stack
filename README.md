@@ -31,7 +31,7 @@
 | Разработка | [GSD Core](https://github.com/open-gsd/gsd-core), [gstack](https://github.com/garrytan/gstack) | Этапы, планирование, ревью и браузерный QA |
 | Дизайн | [Impeccable](https://github.com/pbakaus/impeccable), [Emil](https://github.com/emilkowalski/skills) | Цельный интерфейс, компоненты, анимации и детали взаимодействия |
 | Обратная связь | [Agentation](https://github.com/benjitaylor/agentation) | Замечания прямо на элементах страницы → агент |
-| Код и вывод | [Graphify](https://github.com/safishamsi/graphify), [RTK](https://github.com/rtk-ai/rtk) | Связи в коде и компактный вывод команд |
+| Код и вывод | [Graphify](https://github.com/Graphify-Labs/graphify), [RTK](https://github.com/rtk-ai/rtk) | Связи в коде и компактный вывод команд |
 | Знания | [ObsidianDataWeave](https://github.com/howdeploy/ObsidianDataWeave), [researcher](https://github.com/howdeploy/kisa-stack/tree/main/skills/researcher) | Общая LLM Wiki, источники и исследование |
 | По задаче | [MTGA](https://github.com/howdeploy/MTGA), [Remotion](https://github.com/remotion-dev/remotion) | Стиль ответов и видео на React |
 
