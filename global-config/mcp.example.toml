@@ -1,0 +1,15 @@
+# Фрагменты для слияния с конфигом Codex, не замена всего config.toml.
+# Один способ подключения на сервер; существующие записи сохраняйте.
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+# Вариант с API key: переменная должна быть доступна процессу Codex.
+# bearer_token_env_var = "CONTEXT7_API_KEY"
+# Для OAuth оставьте эту строку закомментированной и выполните:
+# codex mcp login context7
+
+[mcp_servers.agentation]
+command = "npx"
+args = ["-y", "agentation-mcp@1.2.0", "server"]
+startup_timeout_sec = 30
+# Если desktop не видит npx, укажите его абсолютный путь из command -v npx.

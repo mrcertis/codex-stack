@@ -1,0 +1,17 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+config.toml
+PROJECTS.md
+*.key
+*.pem
+*.bak
+backups/
+work/
+node_modules/
+.venv/
+__pycache__/
+.codex/
+.agents/
+installation-report.local.md
