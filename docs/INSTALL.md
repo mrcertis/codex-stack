@@ -30,13 +30,18 @@ Backup приватный, вне checkout. При повторном запус
 
 ## Глобальные правила
 
-Откройте [global-config/AGENTS.md](../global-config/AGENTS.md). В копии для вашего
-компьютера замените `<TOOLS_ROOT>` на абсолютный STACK_TOOLS, а `<WIKI_ROOT>` —
-на абсолютный STACK_VAULT/LLM Wiki. Это текстовые подстановки, shell сам их не делает.
+Из корня этого checkout выполните dry run, затем применение:
 
-Если глобального AGENTS.md нет, сохраните настроенную копию туда. Если есть —
-объедините разделы, сохраняя личные правила; не используйте слепое перенаправление
-поверх файла. При нестандартном CODEX_HOME замените и упоминания ~/.codex.
+```bash
+python3 scripts/install_config.py --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki"
+python3 scripts/install_config.py --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki" --apply
+```
+
+Старый глобальный AGENTS.md полностью заменяется [шаблоном](../global-config/AGENTS.md),
+а не объединяется с ним. Скрипт подставляет пути, сохраняет приватную резервную
+копию и добавляет свои хуки с сохранением чужих. config.toml и PROJECTS.md не
+изменяются. AGENTS.override.md требует отдельного рассмотрения, поскольку
+затеняет AGENTS.md. [Состав хуков, доверие и откат](HOOKS.md).
 
 [PROJECTS.example.md](../global-config/PROJECTS.example.md) — образец для нового
 приватного реестра. Существующий PROJECTS.md не заменяйте. [Правила Codex](https://developers.openai.com/codex/guides/agents-md/).
@@ -86,19 +91,26 @@ bearer_token_env_var = "CONTEXT7_API_KEY"
 npx impeccable install
 ```
 
-Выберите **Codex** и **глобальную установку** для личного стека. Для командного
-репозитория можно выбрать локальную установку отдельно. Установщик размещает
-payload для выбранной среды; проверьте фактический путь SKILL.md, а не только
-сообщение об успехе. Codex обнаруживает пользовательские skills в ~/.agents/skills,
-проектные — в .agents/skills; старые установки могут использовать ~/.codex/skills.
-Не создавайте второй экземпляр с тем же именем.
+Запускайте команду **из выбранного UI-проекта**. Выберите **Codex** и **local/project**:
+ожидаемый путь — `.agents/skills/impeccable/SKILL.md`. Глобально Impeccable в этом
+стеке не устанавливается. Если глобальная копия уже существует, проверьте конфликт
+обнаружения и согласуйте её отключение отдельно; не удаляйте её молча.
 
-Если выбраны hooks, проверьте сохранность существующего manifest. Откройте
-управление hooks в Codex и подтвердите доверие через предусмотренный интерфейс;
-если версия среды их не поддерживает, используйте skill без hook и явно отметьте это.
-После установки откройте новую задачу, убедитесь, что `$impeccable` доступен.
-`init` создаёт контекст продукта в конкретном проекте — не запускайте его во всех
-репозиториях при глобальной установке. Обновление: `npx impeccable update`.
+В проекте вызовите `$impeccable hooks on`, затем `$impeccable hooks status`.
+Проверьте `.codex/hooks.json`: локальные PostToolUse и Stop, сохранность чужих
+обработчиков. Подтвердите доверие через Settings → Hooks или `/hooks`, если
+этот интерфейс доступен в вашей версии. Установленное без trust не считается
+исполняемым. [Документация hooks](https://impeccable.style/docs/hooks/).
+Откройте новую задачу в этом проекте. `init` создаёт PRODUCT.md; DESIGN.md
+фиксируется по завершении реализации согласно playbook. [Процесс](NEW-PROJECT.md).
+Обновление из того же проекта: `npx impeccable update`.
+
+## Интервью нового проекта и Z.A.E.B.A.L.
+
+Установите [grill-with-docs и его зависимости](NEW-PROJECT.md), затем
+[обязательный Z.A.E.B.A.L.](ZAEBAL.md). Один skill без UserPromptSubmit hook
+не завершает настройку Z.A.E.B.A.L. Стековые хуки уже поставлены шагом глобальных
+правил; доверие и реальный запуск проверяются отдельно.
 
 ## Emil Design Engineering
 
@@ -211,11 +223,9 @@ PATH="$PWD/.venv/bin:$PATH" bash install.sh --mode codex --vault-path "$STACK_VA
 штатный writer. Google Drive и NotebookLM — опциональны и требуют личного входа.
 Отсутствие их авторизации не равно неработающей локальной Wiki.
 
-Wiki-hooks опциональны. Сначала используйте явные ссылки из AGENTS.md. Если нужны
-якоря на старте/после сжатия контекста, ориентируйтесь на
-[хуки KISA](https://github.com/howdeploy/kisa-stack/tree/main/global-config/hooks),
-но адаптируйте к поддерживаемым событиям Codex и проверьте реальное срабатывание.
-Не переносите Claude-конфигурацию как есть и не объявляйте hook рабочим до проверки trust.
+Напоминание о Wiki входит в [поставляемые хуки Codex](HOOKS.md). SessionStart и
+UserPromptSubmit передают контекст агенту; PostCompact показывает уведомление,
+но не обещает вставку текста в контекст модели. Сами хуки не пишут в Wiki.
 
 ## researcher
 

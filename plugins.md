@@ -5,7 +5,10 @@
 | Инструмент и источник | Тип | Когда использовать | Установка / размещение |
 |---|---|---|---|
 | [Context7](https://github.com/upstash/context7) | Hosted MCP + необязательный skill | Документация библиотек, API, миграции версий | MCP в конфиге Codex; [настройка](docs/INSTALL.md#context7) |
-| [Impeccable](https://github.com/pbakaus/impeccable) · [доки](https://impeccable.style/docs/) | Skill + CLI + опциональные hooks | Структура интерфейса, визуальная система, UX, доступность | `npx impeccable install`; выбрать Codex и scope |
+| [Impeccable](https://github.com/pbakaus/impeccable) · [доки](https://impeccable.style/docs/) | Проектный skill + CLI + hooks | Структура интерфейса, визуальная система, UX, доступность | `npx impeccable install` в выбранном проекте; Codex, local |
+| [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) | Skill + grilling и domain-modeling | Обязательный старт нового проекта: интервью и требования | [Установка и процесс](docs/NEW-PROJECT.md) |
+| [Z.A.E.B.A.L.](https://github.com/howdeploy/Z.A.E.B.A.L) | Обязательный skill + UserPromptSubmit hook | Самопроверка при недовольстве работой агента | [Установка для Codex](docs/ZAEBAL.md) |
+| [Хуки Codex Stack](docs/HOOKS.md) | SessionStart, UserPromptSubmit, PostCompact | Напоминание маршрута проекта и Wiki | `python3 scripts/install_config.py --apply` |
 | [Emil Design Engineering](https://github.com/emilkowalski/skills) | Skills | Анимация, реакции компонентов, жесты, polish | Выбрать `emil-design-eng` и Codex в `npx skills@latest add emilkowalski/skills` |
 | [gstack](https://github.com/garrytan/gstack) | CLI + skills | План, code review, браузерный QA, выпуск | Общий каталог Tools; `./setup --host codex` |
 | [GSD Core](https://github.com/open-gsd/gsd-core) | CLI + skills + агенты | Большие задачи с этапами и передачей контекста | `npx @opengsd/gsd-core@latest --codex --global` |

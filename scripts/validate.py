@@ -13,6 +13,9 @@ EXPECTED = {
     "global-config/AGENTS.md", "global-config/PROJECTS.example.md",
     "global-config/mcp.example.toml", "docs/AGENT-SETUP.md", "docs/INSTALL.md",
     "docs/USAGE.md", "docs/VERIFY.md", "scripts/validate.py",
+    "docs/NEW-PROJECT.md", "docs/HOOKS.md", "docs/ZAEBAL.md",
+    "docs/SECURITY-CHECK.md", "hooks/stack-context.py",
+    "scripts/install_config.py", "tests/test_install.py",
 }
 errors = []
 for name in sorted(EXPECTED):

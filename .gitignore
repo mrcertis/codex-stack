@@ -15,3 +15,6 @@ __pycache__/
 .codex/
 .agents/
 installation-report.local.md
+.zaebal/
+*.jsonl
+*secret-audit*/
