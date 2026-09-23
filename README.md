@@ -29,7 +29,7 @@
 | Контекст | [Хуки Codex](docs/HOOKS.md) | Маршрут работы и напоминание о Wiki |
 | Дизайн | [Impeccable](https://github.com/pbakaus/impeccable), [Emil](https://github.com/emilkowalski/skills) | Цельный интерфейс, компоненты, анимации и детали взаимодействия |
 | Обратная связь | [Agentation](https://github.com/benjitaylor/agentation) | Замечания прямо на элементах страницы → агент |
-| Код и вывод | [Graphify](https://github.com/Graphify-Labs/graphify), [RTK](https://github.com/rtk-ai/rtk) | Связи в коде и компактный вывод команд |
+| Код и вывод | [Ponytail](https://github.com/DietrichGebert/ponytail), [Graphify](https://github.com/Graphify-Labs/graphify), [RTK](https://github.com/rtk-ai/rtk) | Минимальное решение после чтения кода, связи в проекте и компактный вывод команд |
 | Знания | [ObsidianDataWeave](https://github.com/howdeploy/ObsidianDataWeave), [researcher](https://github.com/howdeploy/kisa-stack/tree/main/skills/researcher) | Общая LLM Wiki, источники и исследование |
 | По задаче | [MTGA](https://github.com/howdeploy/MTGA), [Remotion](https://github.com/remotion-dev/remotion) | Стиль ответов и видео на React |
 
@@ -49,7 +49,7 @@ Wiki одна для общего знания, внутри отдельные 
 - Многие upstream-инструменты поддерживают Claude Code и другие среды. Их конфигурации не взаимозаменяемы; эта инструкция настраивает Codex.
 - MCP, skill, CLI и плагин — разные сущности. Наличие skill не означает, что MCP подключён.
 - Это не обещание установки всего стека за пять минут. Авторизация, браузеры, hooks trust и проектные интеграции проверяются отдельно.
-- Инструкции сверены 10 сентября 2026. Upstream меняется; после обновления повторяйте проверки. См. [статус проверки](docs/VERIFY.md).
+- Основные инструкции сверены 10 сентября 2026, Ponytail — 24 сентября 2026. Upstream меняется; после обновления повторяйте проверки. См. [статус проверки](docs/VERIFY.md).
 
 ## Происхождение
 

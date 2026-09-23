@@ -116,6 +116,26 @@ Impeccable входит в начальный локальный набор **к
 не завершает настройку Z.A.E.B.A.L. Стековые хуки уже поставлены шагом глобальных
 правил; доверие и реальный запуск проверяются отдельно.
 
+## Ponytail
+
+Источник: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail).
+Плагин выбирает простую реализацию после изучения затронутого кода. Его
+SessionStart, UserPromptSubmit и SubagentStart hooks требуют Node.js и доверия
+в Codex. Перед установкой проверьте исходники и текущий commit репозитория.
+
+```bash
+codex plugin marketplace add DietrichGebert/ponytail --ref v4.10.0
+codex plugin add ponytail@ponytail
+codex plugin list
+```
+
+После установки откройте `/hooks`, просмотрите команды Ponytail и подтвердите
+доверие к ним. Перезапустите Codex Desktop и откройте новую задачу. Плагин по
+умолчанию включает режим `full`; `@ponytail lite` и `@ponytail off` меняют режим
+для сеанса. Не переносите его правила целиком в AGENTS.md: явный запрос,
+безопасность и нужные проверки остаются приоритетными. Если плагин мешает,
+откатите только его командой `codex plugin remove ponytail`.
+
 ## Emil Design Engineering
 
 Источник: [emilkowalski/skills](https://github.com/emilkowalski/skills).

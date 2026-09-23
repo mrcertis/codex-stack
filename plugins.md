@@ -9,6 +9,7 @@
 | [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) | Skill + grilling и domain-modeling | Интервью и требования; агент выбирает по обычному запросу | [Локальный старт через stack-start](docs/NEW-PROJECT.md) |
 | [stack-start](skills/stack-start/SKILL.md) | Автоматически выбираемый skill стека | Подготовить локальный набор нового проекта, затем интервью и дизайн по необходимости | Ставится вместе с глобальными правилами и hooks |
 | [Z.A.E.B.A.L.](https://github.com/howdeploy/Z.A.E.B.A.L) | Обязательный skill + UserPromptSubmit hook | Самопроверка при недовольстве работой агента | [Установка для Codex](docs/ZAEBAL.md) |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Плагин Codex: skills + lifecycle hooks | После чтения кода выбрать простейшее корректное решение без лишних абстракций | [Установка и проверка](docs/INSTALL.md#ponytail) |
 | [Хуки Codex Stack](docs/HOOKS.md) | SessionStart, UserPromptSubmit, PostCompact | Напоминание маршрута проекта и Wiki | `python3 scripts/install_config.py --apply` |
 | [Emil Design Engineering](https://github.com/emilkowalski/skills) | Skills | Анимация, реакции компонентов, жесты, polish | Выбрать `emil-design-eng` и Codex в `npx skills@latest add emilkowalski/skills` |
 | [gstack](https://github.com/garrytan/gstack) | CLI + skills | План, code review, браузерный QA, выпуск | Общий каталог Tools; `./setup --host codex` |
@@ -34,5 +35,6 @@
 - Новый UI или пересборка визуального решения → Impeccable. Узкая доработка сохраняет существующий стиль.
 - Поведение и движение элемента → `emil-design-eng`. Его рекомендации согласуются с доступностью и контекстом продукта.
 - Для большого этапа — GSD; для ревью и QA — соответствующий gstack skill. Не запускай два параллельных процесса планирования одной задачи.
+- Для задач с кодом Ponytail помогает сократить реализацию после изучения существующего паттерна. Его подсказки не отменяют явный scope и обязательные проверки.
 - Agentation передаёт фидбек; изменение кода и проверка остаются работой агента в согласованном проекте.
 - При конфликте рекомендаций решают запрос пользователя, требования продукта и реальные ограничения; skill не расширяет разрешения.
