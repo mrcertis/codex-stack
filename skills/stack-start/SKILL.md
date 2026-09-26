@@ -26,6 +26,9 @@ framework choices or a prepared specification. Select tools yourself.
    answers. Record domain terms and significant decisions using domain-modeling.
 4. Confirm your understanding and record requirements in the existing canonical
    brief or docs/brief.md. Do not ask the user to choose a skill or repeat the idea.
+   Wait for the user's confirmation before implementation. Explicitly resolve
+   applicable refresh intervals, data freshness, failure behavior and automatic
+   actions; do not invent defaults. Recommendations and silence are not consent.
 5. If UI is needed, read the already installed local Impeccable SKILL.md and its
    matching playbook. Its init reuses interview answers for PRODUCT.md; its design
    workflow chooses the visual direction with the user. Do not preselect the UI
@@ -38,4 +41,8 @@ framework choices or a prepared specification. Select tools yourself.
 New local skills may not appear in the current session's cached skill menu.
 Read their files directly during this turn; do not claim that the catalog or
 project hooks reloaded. Check hook support and trust separately. Existing-project
-changes use relevant skills directly, without repeating this startup interview.
+changes use relevant skills directly without repeating project setup. They still
+require clarification and confirmation under the global requirements rule;
+only unambiguous small edits with no unresolved behavior choice skip interviewing.
+If a new product decision arises during implementation, ask before implementing
+the affected part; continue independent agreed work and record the answer.
