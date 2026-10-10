@@ -15,7 +15,7 @@
 | Ponytail | `/plugin` (Claude Code) или `codex plugin list`, новый сеанс и `/hooks` | Плагин виден, Node запускает хуки; режим определяется в новом сеансе |
 | PROJECTS.md | Сравнение checksum до и после настройки | Существующий реестр не изменился |
 | Context7 | resolve-library-id и query-docs | Получен содержательный ответ с источником |
-| Impeccable | Локальный .claude/skills/impeccable или .agents/skills/impeccable, init и UI-задача | PRODUCT.md; локальные PostToolUse/Stop; срабатывание проверено отдельно |
+| Impeccable | Локальный .claude/skills/impeccable или .agents/skills/impeccable, init и UI-задача | PRODUCT.md; локальные хуки (в Claude Code ещё SessionStart); срабатывание проверено отдельно |
 | Emil | Видно emil-design-eng; разбор небольшого UI-фрагмента | Агент читает skill и даёт конкретные рекомендации |
 | gstack | browse открывает локальную страницу | Получен реальный DOM/скриншот |
 | GSD | gsd-help и тестовый план в отдельной папке | Команды доступны, артефакты создаются; делегирование проверяется отдельно |
@@ -70,12 +70,26 @@ HOME и установленным стеком модель видела пра
 из контекста SessionStart; с `disableAllHooks` фраза пропадала. Возврат контекста
 после настоящего compact проверен только по JSON-контракту, не в живом сеансе.
 `prepare_project.py --host claude` с реальными установщиками поставил grilling,
-domain-modeling и grill-with-docs в `.claude/skills/`; загрузка Impeccable в этой
-среде была заблокирована сетевой политикой, поэтому его локальная установка
-для Claude Code здесь не подтверждена. Обработчик Z.A.E.B.A.L. (commit
+domain-modeling и grill-with-docs в `.claude/skills/`. Обработчик Z.A.E.B.A.L. (commit
 `16927bdbb03cf97dc81d914648cc192fe71201d3`) с `--host claude` выдал L1 на тестовый
-сигнал и ничего на похвалу. Остальные команды Claude Code для upstream-инструментов
-сверены с их README и `--help`, но не выполнялись.
+сигнал и ничего на похвалу.
+
+В тот же день, в среде с открытой сетью, установка повторена с нуля во временном
+HOME. `prepare_project.py` (по умолчанию хост claude, так как skill лежит
+в `~/.claude/skills`) поставил все четыре skill в `.claude/skills/`, включая
+Impeccable 0.1.14 с движком linux-x64. Impeccable также создал
+`.claude/settings.local.json` с хуками SessionStart, PostToolUse (Edit|Write) и Stop
+и четыре subagent в `.claude/agents/`; skills CLI записал `skills-lock.json`.
+Хук PostToolUse, вызванный вручную на тестовом HTML, вернул замечание
+о контрасте в формате `hookSpecificOutput`. Хуки стека на SessionStart (startup
+и compact) и UserPromptSubmit вернули ожидаемый контекст. Глобально через
+upstream-установщики поставлены emil-design-eng (`npx skills … --agent claude-code
+--global`) и GSD Core (`--claude --global`); GSD добавил 18 своих обработчиков
+и statusLine, блок CLAUDE.md и хуки стека сохранились, повторный запуск
+`install_config.py` их не тронул. `claude mcp add` для Context7 (HTTP) и Agentation
+1.2.0 дал статус Connected в `claude mcp list`. Живой сеанс модели с временным HOME,
+gstack, RTK, Graphify, ObsidianDataWeave, researcher и установка Z.A.E.B.A.L. с нуля
+в этот раз не запускались: среда не разрешила их выполнение.
 
 ## Типичные проблемы
 

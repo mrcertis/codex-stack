@@ -37,7 +37,8 @@ done
 
 Все дальнейшие shell-примеры предполагают эти переменные в том же терминале.
 Backup приватный, вне checkout. MCP-серверы Claude Code уровня user хранятся
-в `~/.claude.json`; перед ручной правкой этого файла сохраните и его копию.
+в `~/.claude.json` (при заданном `CLAUDE_CONFIG_DIR` — в `.claude.json` внутри него);
+перед ручной правкой этого файла сохраните и его копию.
 При повторном запуске не клонируйте поверх существующих каталогов: сначала
 проверьте remote и локальные изменения.
 
@@ -142,7 +143,8 @@ npx impeccable install --providers=codex --scope=project    # Codex
 уже существует, проверьте конфликт обнаружения и согласуйте её отключение
 отдельно; не удаляйте её молча.
 
-Установщик добавляет проектные хуки: в Claude Code — в `.claude/settings.local.json`,
+Установщик добавляет проектные хуки: в Claude Code — в `.claude/settings.local.json`
+(SessionStart, PostToolUse и Stop) и свои subagents в `.claude/agents/`,
 в Codex — в `.codex/hooks.json` (PostToolUse и Stop). Проверьте, что чужие
 обработчики сохранились. В Claude Code просмотрите их через `/hooks`; в Codex
 подтвердите доверие через Settings → Hooks или `/hooks`. [Документация hooks](https://impeccable.style/docs/hooks/).
