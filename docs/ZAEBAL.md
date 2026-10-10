@@ -1,7 +1,8 @@
 # Z.A.E.B.A.L. — обязательная часть стека
 
 Источник: [howdeploy/Z.A.E.B.A.L](https://github.com/howdeploy/Z.A.E.B.A.L).
-Нужны **и skill zaebal, и UserPromptSubmit hook с `--host codex`**. Skill
+Нужны **и skill zaebal, и UserPromptSubmit hook с `--host claude`** (Claude Code)
+или **`--host codex`** (Codex). Skill
 описывает уровни проверки; hook распознаёт сигнал и передаёт протокол агенту.
 Исходники плагина здесь не перепубликуются.
 
@@ -15,17 +16,33 @@ git clone https://github.com/howdeploy/Z.A.E.B.A.L.git "$STACK_TOOLS/Z.A.E.B.A.L
 ```
 
 На проверенной версии `install.sh` автоматически настраивает все найденные
-Claude, Codex, Kimi и OpenCode и не имеет переключателя «только Codex».
-Запускайте его лишь если установка во все эти среды входит в ваш запрос.
+Claude, Codex, Kimi и OpenCode. Запускайте его лишь если установка во все эти
+среды входит в ваш запрос. Для одного хоста upstream описывает маршрут установки
+в своём `skills/zaebal/SKILL.md`.
 
-Для настройки только Codex агент выполняет адресную установку из проверенного
-checkout: сохраняет приватный backup существующих файлов, копирует каталог
-`core/` целиком в `~/.zaebal/core/`, а `skills/zaebal/` — в обнаруживаемый Codex
-каталог skills. Существующий `~/.zaebal/config.json` сохраняется. Не копируйте
+Для адресной установки агент работает из проверенного checkout: сохраняет
+приватный backup существующих файлов, копирует каталог `core/` целиком в
+`~/.zaebal/core/`, а `skills/zaebal/` — в каталог skills выбранного хоста:
+`~/.claude/skills/zaebal/` для Claude Code или обнаруживаемый Codex каталог. Существующий `~/.zaebal/config.json` сохраняется. Не копируйте
 личную конфигурацию или историю автора. Для уже установленного плагина сначала
 проверьте пути и версию; обновление делайте отдельно.
 
-В `CODEX_HOME/hooks.json` **добавьте** к существующему UserPromptSubmit группу:
+**Claude Code:** в `~/.claude/settings.json` в ключ `hooks` **добавьте**
+к существующему UserPromptSubmit группу:
+
+```json
+{
+  "hooks": [
+    {
+      "type": "command",
+      "command": "python3 ~/.zaebal/core/zaebal.py --host claude",
+      "timeout": 180
+    }
+  ]
+}
+```
+
+**Codex:** в `CODEX_HOME/hooks.json` **добавьте** к существующему UserPromptSubmit группу:
 
 ```json
 {
@@ -42,8 +59,9 @@ checkout: сохраняет приватный backup существующих 
 Это одна группа события, не полный hooks.json. Для desktop без Python в PATH
 используйте абсолютный путь интерпретатора. Если обработчик уже есть, обновите
 его адресно вместо добавления дубля. Сохраните все остальные обработчики.
-Перезапустите сеанс, проверьте обнаружение skill и подтвердите доверие hook через
-интерфейс Codex. При нестандартном CODEX_HOME укажите именно его hooks.json.
+Перезапустите сеанс и проверьте обнаружение skill. В Claude Code просмотрите hook
+через `/hooks`; в Codex подтвердите доверие через его интерфейс. При нестандартном
+CLAUDE_CONFIG_DIR или CODEX_HOME укажите именно его файл настроек.
 
 ## Проверка без внешнего аудитора
 
@@ -52,16 +70,18 @@ checkout: сохраняет приватный backup существующих 
 
 ```bash
 STACK_AUDIT_TEST=$(mktemp -d)
-printf '%s' '{"hook_event_name":"UserPromptSubmit","session_id":"stack-smoke","prompt":"ты меня заебал"}' | ZAEBAL_STATE_DIR="$STACK_AUDIT_TEST" python3 "$HOME/.zaebal/core/zaebal.py" --host codex
+printf '%s' '{"hook_event_name":"UserPromptSubmit","session_id":"stack-smoke","prompt":"ты меня заебал"}' | ZAEBAL_STATE_DIR="$STACK_AUDIT_TEST" python3 "$HOME/.zaebal/core/zaebal.py" --host claude
 ```
 
 Ожидается текстовый блок `<zaebal level="1">` в stdout. Похвала «заебись, работает!»
 в другой тестовой сессии не должна запускать протокол. Этот тест проверяет
-обработчик; запуск из Codex и доверие нужно подтвердить отдельно в журнале hooks.
+обработчик (для Codex замените хост на `codex`); запуск из самого агента нужно
+подтвердить отдельно.
 Не повторяйте ругань в одной сессии ради smoke-test: это повышает уровень.
 
 По умолчанию внешний аудитор вызывается на уровне 3 (`audit_levels: [3]`,
-`auditor: "same"`). Он может отправить хвост диалога в выбранный CLI/backend и
+`auditor: "same"`; для Claude Code это `claude -p` только с Read, Grep и Glob).
+Он может отправить хвост диалога в выбранный CLI/backend и
 расходовать его лимит. Его авторизация и допустимые данные проверяются отдельно;
 подключение hook не является разрешением передавать любые приватные материалы.
 Настройки берите из текущего upstream skill; не включайте небезопасные режимы.

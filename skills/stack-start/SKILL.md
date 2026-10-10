@@ -13,9 +13,11 @@ framework choices or a prepared specification. Select tools yourself.
    actual ambiguity. Never initialize the stack distribution, home directory or
    an unrelated existing project merely because the session opened there.
 2. Before discovery, run `scripts/prepare_project.py --project /absolute/project`
-   from this skill's directory, using Python 3.11+. It installs the local starting
-   set: grill-with-docs, grilling, domain-modeling and Impeccable, even before UI
-   requirements are known. Existing installations are preserved. Respect runtime
+   from this skill's directory, using Python 3.11+. Add `--host claude` in Claude Code
+   (skills go to `.claude/skills/`) or `--host codex` in Codex (`.agents/skills/`);
+   by default the host follows where this skill is installed. It installs the local
+   starting set: grill-with-docs, grilling, domain-modeling and Impeccable, even
+   before UI requirements are known. Existing installations are preserved. Respect runtime
    network/write permissions. If setup fails, report the actual missing part;
    do not claim it installed or silently switch to a different project.
 3. Read the local grilling and domain-modeling SKILL.md files and conduct their

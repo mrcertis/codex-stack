@@ -1,8 +1,13 @@
 # Полная установка
 
 Команды ниже — для macOS/Linux или WSL. Выполняйте разделы по очереди, а не одним
-блоком. Требуются авторизованный Codex, Git, Node.js LTS, Python 3.11+, uv и Bun.
-Устанавливайте системные prerequisites по документации их поставщиков.
+блоком. Стек ставится для одного или двух хостов: **Claude Code** (основной
+сценарий) и **Codex**. В каждом разделе сначала команды Claude Code, затем Codex.
+Ставьте только для того хоста, которым пользуетесь; конфигурации хостов не
+взаимозаменяемы.
+
+Требуются авторизованный Claude Code или Codex, Git, Node.js LTS, Python 3.11+, uv
+и Bun. Устанавливайте системные prerequisites по документации их поставщиков.
 Версии upstream меняются: сверяйте --help и сохраняйте версии в локальном отчёте.
 
 ## Пути и резервная копия
@@ -12,39 +17,66 @@
 ```bash
 STACK_TOOLS="$HOME/Documents/Codex/Tools"
 STACK_VAULT="$HOME/Documents/Codex/Knowledge"
+STACK_CLAUDE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 STACK_CODEX="${CODEX_HOME:-$HOME/.codex}"
-mkdir -p "$STACK_TOOLS" "$STACK_VAULT" "$STACK_CODEX"
+mkdir -p "$STACK_TOOLS" "$STACK_VAULT"
 STACK_BACKUP="$STACK_TOOLS/stack-backups/$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$STACK_BACKUP"
+mkdir -p "$STACK_BACKUP/claude" "$STACK_BACKUP/codex"
 chmod 700 "$STACK_BACKUP"
+for stack_file in CLAUDE.md settings.json PROJECTS.md; do
+  if [ -f "$STACK_CLAUDE/$stack_file" ]; then
+    cp -p "$STACK_CLAUDE/$stack_file" "$STACK_BACKUP/claude/"
+  fi
+done
 for stack_file in AGENTS.md config.toml hooks.json RTK.md PROJECTS.md; do
   if [ -f "$STACK_CODEX/$stack_file" ]; then
-    cp -p "$STACK_CODEX/$stack_file" "$STACK_BACKUP/"
+    cp -p "$STACK_CODEX/$stack_file" "$STACK_BACKUP/codex/"
   fi
 done
 ```
 
 Все дальнейшие shell-примеры предполагают эти переменные в том же терминале.
-Backup приватный, вне checkout. При повторном запуске не клонируйте поверх
-существующих каталогов: сначала проверьте remote и локальные изменения.
+Backup приватный, вне checkout. MCP-серверы Claude Code уровня user хранятся
+в `~/.claude.json` (при заданном `CLAUDE_CONFIG_DIR` — в `.claude.json` внутри него);
+перед ручной правкой этого файла сохраните и его копию.
+При повторном запуске не клонируйте поверх существующих каталогов: сначала
+проверьте remote и локальные изменения.
 
 ## Глобальные правила
 
-Из корня этого checkout выполните dry run, затем применение:
+Из корня этого checkout выполните dry run, затем применение.
+
+**Claude Code:**
 
 ```bash
-python3 scripts/install_config.py --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki"
-python3 scripts/install_config.py --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki" --apply
+python3 scripts/install_config.py --host claude --claude-home "$STACK_CLAUDE" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki"
+python3 scripts/install_config.py --host claude --claude-home "$STACK_CLAUDE" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki" --apply
+```
+
+Скрипт добавляет [шаблон](../global-config/CLAUDE.md) в `~/.claude/CLAUDE.md`
+**блоком между маркерами** `<!-- codex-stack:begin -->` и `<!-- codex-stack:end -->`.
+Остальное содержимое CLAUDE.md, в том числе блоки других установщиков, сохраняется;
+повторный запуск заменяет только этот блок. Хуки добавляются в ключ `hooks`
+файла `settings.json`, прочие ключи (permissions, env, model, плагины) не меняются.
+[Правила памяти Claude Code](https://code.claude.com/docs/en/memory).
+
+**Codex:**
+
+```bash
+python3 scripts/install_config.py --host codex --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki"
+python3 scripts/install_config.py --host codex --codex-home "$STACK_CODEX" --tools-root "$STACK_TOOLS" --wiki-root "$STACK_VAULT/LLM Wiki" --apply
 ```
 
 Старый глобальный AGENTS.md полностью заменяется [шаблоном](../global-config/AGENTS.md),
-а не объединяется с ним. Скрипт подставляет пути, сохраняет приватную резервную
-копию и добавляет свои хуки с сохранением чужих. config.toml и PROJECTS.md не
-изменяются. AGENTS.override.md требует отдельного рассмотрения, поскольку
-затеняет AGENTS.md. [Состав хуков, доверие и откат](HOOKS.md).
+а не объединяется с ним. config.toml не изменяется. AGENTS.override.md требует
+отдельного рассмотрения, поскольку затеняет AGENTS.md.
+[Правила Codex](https://developers.openai.com/codex/guides/agents-md/).
 
+Для обоих хостов скрипт подставляет пути, сохраняет приватную резервную копию
+и добавляет свои хуки с сохранением чужих. [Состав хуков и откат](HOOKS.md).
 [PROJECTS.example.md](../global-config/PROJECTS.example.md) — образец для нового
-приватного реестра. Существующий PROJECTS.md не заменяйте. [Правила Codex](https://developers.openai.com/codex/guides/agents-md/).
+приватного реестра (`~/.claude/PROJECTS.md` или `~/.codex/PROJECTS.md`).
+Существующий PROJECTS.md не заменяйте.
 
 ## Context7
 
@@ -52,31 +84,40 @@ python3 scripts/install_config.py --codex-home "$STACK_CODEX" --tools-root "$STA
 
 Сначала проверьте, нет ли уже рабочей записи `context7`. Выберите **один** вариант.
 
-**OAuth:** добавьте hosted MCP и выполните вход:
+**Claude Code, OAuth:** добавьте hosted MCP на уровне пользователя:
+
+```bash
+claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp
+```
+
+Затем в сеансе Claude Code откройте `/mcp`, выберите context7 и выполните вход.
+Браузерный вход делает владелец. Готовый JSON-фрагмент —
+[mcp.claude.example.json](../global-config/mcp.claude.example.json).
+[MCP в Claude Code](https://code.claude.com/docs/en/mcp).
+
+**Claude Code, API key:** передайте свой ключ из переменной окружения заголовком
+Authorization, не вставляя его в публичные файлы:
+
+```bash
+claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp --header "Authorization: Bearer $CONTEXT7_API_KEY"
+```
+
+**Codex, OAuth:**
 
 ```bash
 codex mcp add context7 --url https://mcp.context7.com/mcp
 codex mcp login context7
 ```
 
-Браузерный вход делает владелец. Если конкретный клиент не поддерживает этот
-способ, используйте API key. Проверяйте синтаксис через `codex mcp --help`.
+**Codex, API key:** передайте ключ процессу Codex через переменную
+`CONTEXT7_API_KEY` и добавьте фрагмент из [mcp.example.toml](../global-config/mcp.example.toml)
+с `bearer_token_env_var`. Поля: [документация MCP Codex](https://developers.openai.com/codex/mcp/).
 
-**API key:** создайте собственный ключ в Context7 и передайте его процессу Codex
-через переменную `CONTEXT7_API_KEY`. Добавьте фрагмент в config.toml:
-
-```toml
-[mcp_servers.context7]
-url = "https://mcp.context7.com/mcp"
-bearer_token_env_var = "CONTEXT7_API_KEY"
-```
-
-Не вставляйте реальный ключ в публичный TOML, команду, issue или чат. Переменная
+Не вставляйте реальный ключ в публичный конфиг, issue или чат. Переменная
 терминала может быть недоступна desktop-приложению; перезапустите его с нужным
 окружением либо используйте OAuth. Не включайте одновременно две записи сервера.
-Поля конфигурации: [официальная документация MCP](https://developers.openai.com/codex/mcp/).
 
-Альтернатива — официальный мастер `npx ctx7 setup`: выберите Codex и MCP;
+Альтернатива — официальный мастер `npx ctx7 setup` (флаг `--claude` для Claude Code);
 проверьте его изменения. Он может также установить skill и правило использования.
 Не запускайте мастер поверх уже рабочего подключения ради дублирующей записи.
 
@@ -87,23 +128,26 @@ bearer_token_env_var = "CONTEXT7_API_KEY"
 
 Источник: [pbakaus/impeccable](https://github.com/pbakaus/impeccable), [доки](https://impeccable.style/docs/).
 
-```bash
-npx impeccable install
-```
-
 Impeccable входит в начальный локальный набор **каждого нового проекта**, до
 интервью и выбора UI. Это автоматически организует агент через stack-start.
-Для адресной ручной установки запускайте команду **из папки проекта**.
-Выберите **Codex** и **local/project**:
-ожидаемый путь — `.agents/skills/impeccable/SKILL.md`. Глобально Impeccable в этом
-стеке не устанавливается. Если глобальная копия уже существует, проверьте конфликт
-обнаружения и согласуйте её отключение отдельно; не удаляйте её молча.
+Для адресной ручной установки запускайте команду **из папки проекта**:
 
-В проекте вызовите `$impeccable hooks on`, затем `$impeccable hooks status`.
-Проверьте `.codex/hooks.json`: локальные PostToolUse и Stop, сохранность чужих
-обработчиков. Подтвердите доверие через Settings → Hooks или `/hooks`, если
-этот интерфейс доступен в вашей версии. Установленное без trust не считается
-исполняемым. [Документация hooks](https://impeccable.style/docs/hooks/).
+```bash
+npx impeccable install --providers=claude --scope=project   # Claude Code
+npx impeccable install --providers=codex --scope=project    # Codex
+```
+
+Ожидаемый путь: `.claude/skills/impeccable/SKILL.md` для Claude Code и
+`.agents/skills/impeccable/SKILL.md` для Codex. Глобально Impeccable в этом
+стеке не устанавливается (в том числе плагином `/plugin`). Если глобальная копия
+уже существует, проверьте конфликт обнаружения и согласуйте её отключение
+отдельно; не удаляйте её молча.
+
+Установщик добавляет проектные хуки: в Claude Code — в `.claude/settings.local.json`
+(SessionStart, PostToolUse и Stop) и свои subagents в `.claude/agents/`,
+в Codex — в `.codex/hooks.json` (PostToolUse и Stop). Проверьте, что чужие
+обработчики сохранились. В Claude Code просмотрите их через `/hooks`; в Codex
+подтвердите доверие через Settings → Hooks или `/hooks`. [Документация hooks](https://impeccable.style/docs/hooks/).
 При работе агент сам выбирает Impeccable после интервью, если нужен интерфейс;
 пользователю не нужно вызывать его команду. `init` создаёт PRODUCT.md; DESIGN.md
 фиксируется по завершении реализации согласно playbook. [Процесс](NEW-PROJECT.md).
@@ -114,14 +158,25 @@ Impeccable входит в начальный локальный набор **к
 Установите [grill-with-docs и его зависимости](NEW-PROJECT.md), затем
 [обязательный Z.A.E.B.A.L.](ZAEBAL.md). Один skill без UserPromptSubmit hook
 не завершает настройку Z.A.E.B.A.L. Стековые хуки уже поставлены шагом глобальных
-правил; доверие и реальный запуск проверяются отдельно.
+правил; реальный запуск проверяется отдельно.
 
 ## Ponytail
 
 Источник: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail).
-Плагин выбирает простую реализацию после изучения затронутого кода. Его
-SessionStart, UserPromptSubmit и SubagentStart hooks требуют Node.js и доверия
-в Codex. Перед установкой проверьте исходники и текущий commit репозитория.
+Плагин выбирает простую реализацию после изучения затронутого кода. Его hooks
+требуют Node.js. Перед установкой проверьте исходники и текущий commit репозитория.
+
+**Claude Code** — две отдельные команды в сеансе:
+
+```
+/plugin marketplace add DietrichGebert/ponytail
+/plugin install ponytail@ponytail
+```
+
+Проверьте плагин и его hooks через `/plugin` и `/hooks`, затем откройте новый сеанс.
+Откат: `/plugin uninstall ponytail@ponytail`.
+
+**Codex:**
 
 ```bash
 codex plugin marketplace add DietrichGebert/ponytail --ref v4.10.0
@@ -130,30 +185,39 @@ codex plugin list
 ```
 
 После установки откройте `/hooks`, просмотрите команды Ponytail и подтвердите
-доверие к ним. Перезапустите Codex Desktop и откройте новую задачу. Плагин по
-умолчанию включает режим `full`; `@ponytail lite` и `@ponytail off` меняют режим
-для сеанса. Не переносите его правила целиком в AGENTS.md: явный запрос,
-безопасность и нужные проверки остаются приоритетными. Если плагин мешает,
-откатите только его командой `codex plugin remove ponytail`.
+доверие к ним. Перезапустите Codex Desktop и откройте новую задачу. Режим меняется
+`@ponytail lite` и `@ponytail off`. Откат: `codex plugin remove ponytail`.
+
+Не переносите правила Ponytail целиком в CLAUDE.md или AGENTS.md: явный запрос,
+безопасность и нужные проверки остаются приоритетными.
 
 ## Emil Design Engineering
 
 Источник: [emilkowalski/skills](https://github.com/emilkowalski/skills).
 
 ```bash
-npx skills@latest add emilkowalski/skills
+npx skills@latest add emilkowalski/skills --skill emil-design-eng --agent claude-code --global   # Claude Code
+npx skills@latest add emilkowalski/skills --skill emil-design-eng --agent codex --global         # Codex
 ```
 
-В установщике выберите **emil-design-eng**, **Codex**, **global**. Дополнительный
-`review-animations` выбирайте при необходимости. Не ставьте все skills автоматически:
-в разных наборах могут совпадать имена, например animate.
-Проверьте, что есть SKILL.md и агент видит `$emil-design-eng`.
-Вариант для установки агентом — `$skill-installer` с URL:
-https://github.com/emilkowalski/skills/tree/main/skills/emil-design-eng
+Дополнительный `review-animations` выбирайте при необходимости. Не ставьте все
+skills автоматически: в разных наборах могут совпадать имена, например animate.
+Проверьте, что есть SKILL.md и агент видит skill: `/emil-design-eng` в Claude Code,
+`$emil-design-eng` в Codex.
 
 ## gstack
 
 Источник: [garrytan/gstack](https://github.com/garrytan/gstack). Требуется Bun.
+
+**Claude Code** — путь из README gstack:
+
+```bash
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git "$STACK_CLAUDE/skills/gstack"
+cd "$STACK_CLAUDE/skills/gstack"
+./setup
+```
+
+**Codex:**
 
 ```bash
 git clone --depth 1 https://github.com/garrytan/gstack.git "$STACK_TOOLS/gstack"
@@ -161,23 +225,22 @@ cd "$STACK_TOOLS/gstack"
 ./setup --host codex
 ```
 
-Прочитайте setup перед запуском. Он создаёт Codex-версию skills; не копируйте
-Claude-набор вручную. Проверьте `$browse` и `$review` в новом сеансе. Браузерный
-путь выбирается по текущему SKILL.md: Aside при наличии либо bundled Chromium.
-Для Chromium нужны загрузка браузера и разрешения ОС. Само обнаружение skill
-не доказывает, что браузер открывается.
+Прочитайте setup перед запуском. Для Codex он создаёт отдельную версию skills;
+не копируйте Claude-набор вручную. Проверьте browse и review в новом сеансе.
+Браузерный путь выбирается по текущему SKILL.md. Для Chromium нужны загрузка
+браузера и разрешения ОС. Само обнаружение skill не доказывает, что браузер открывается.
 
 ## GSD Core
 
 Источник: [open-gsd/gsd-core](https://github.com/open-gsd/gsd-core).
 
 ```bash
-npx @opengsd/gsd-core@latest --codex --global
+npx @opengsd/gsd-core@latest --claude --global   # Claude Code
+npx @opengsd/gsd-core@latest --codex --global    # Codex
 ```
 
 Сохраните существующую конфигурацию и проверьте diff после установки.
-Runtime обычно находится в ~/.codex/gsd-core, агентские определения — в
-~/.codex/agents; точные пути смотрите в отчёте установщика. Проверьте `$gsd-help`.
+Точные пути смотрите в отчёте установщика. Проверьте gsd-help в новом сеансе.
 Полный процесс разработки проверяется на отдельной задаче: обнаружение агентов
 не доказывает поддержку всех режимов делегирования вашим рантаймом.
 
@@ -190,12 +253,14 @@ macOS с Homebrew:
 ```bash
 brew install rtk
 rtk --version
-rtk init -g --codex
+rtk init -g          # Claude Code: PreToolUse hook + RTK.md
+rtk init -g --codex  # Codex
 ```
 
 На Linux используйте официальный способ из README RTK для вашей ОС.
-Проверьте diff AGENTS.md после init, сохраните прежние правила. Явное чтение
-RTK.md и правило в AGENTS.md надёжнее предположения, что `@...` разворачивается.
+В Claude Code хук переписывает только Bash-команды; Read, Grep и Glob через него
+не проходят. Для Codex проверьте diff AGENTS.md после init и сохраните прежние
+правила: явное чтение RTK.md надёжнее предположения, что `@...` разворачивается.
 Проверка в Git-репозитории: `rtk git status`, затем `rtk gain`.
 
 ## Graphify
@@ -206,7 +271,8 @@ RTK.md и правило в AGENTS.md надёжнее предположени�
 ```bash
 uv tool install graphifyy
 graphify --help
-graphify install --platform codex
+graphify install                    # Claude Code
+graphify install --platform codex   # Codex
 ```
 
 Если graphifyy уже установлен, не обновляйте без причины. Проверяйте созданный
@@ -224,12 +290,16 @@ cd "$STACK_TOOLS/ObsidianDataWeave"
 python3 -m venv .venv
 ```
 
-Прочитайте AGENTS.md и install.sh. Затем:
+Прочитайте AGENTS.md и install.sh. Затем выберите режим своего хоста:
 
 ```bash
-PATH="$PWD/.venv/bin:$PATH" bash install.sh --mode codex --vault-path "$STACK_VAULT"
+PATH="$PWD/.venv/bin:$PATH" bash install.sh --mode claude --vault-path "$STACK_VAULT"   # Claude Code
+PATH="$PWD/.venv/bin:$PATH" bash install.sh --mode codex --vault-path "$STACK_VAULT"    # Codex
 .venv/bin/python scripts/doctor.py
 ```
+
+Режим claude регистрирует навык в `~/.claude/skills/` и добавляет свой блок
+в `~/.claude/CLAUDE.md`; он не пересекается с блоком Codex Stack.
 
 Создание Wiki — отдельная явная часть настройки знания. Если пользователь её
 разрешил, создайте space и проверьте на публичном небольшом входном документе:
@@ -237,28 +307,35 @@ PATH="$PWD/.venv/bin:$PATH" bash install.sh --mode codex --vault-path "$STACK_VA
 ```bash
 .venv/bin/python scripts/wiki_init.py codex --mode project --title "Codex Stack" --lang ru
 .venv/bin/python scripts/wiki_ingest.py codex /absolute/path/to/public-input.md --kind docs
-.venv/bin/python scripts/wiki_compile.py codex --backend codex
+.venv/bin/python scripts/wiki_compile.py codex --backend claude   # или --backend codex
 .venv/bin/python scripts/wiki_lint.py codex --strict
 ```
 
-Подставьте существующий public-input.md. Читайте --help установленной версии при
-расхождении флагов. Компиляция вызывает LLM backend: используйте разрешённые данные.
+Space стека называется `codex` для обоих хостов. Подставьте существующий
+public-input.md. Читайте --help установленной версии при расхождении флагов.
+Компиляция вызывает LLM backend: используйте разрешённые данные.
 Не перезаписывайте существующий space; дальнейшие обновления проходят через
 штатный writer. Google Drive и NotebookLM — опциональны и требуют личного входа.
 Отсутствие их авторизации не равно неработающей локальной Wiki.
 
-Напоминание о Wiki входит в [поставляемые хуки Codex](HOOKS.md). SessionStart и
-UserPromptSubmit передают контекст агенту; PostCompact показывает уведомление,
-но не обещает вставку текста в контекст модели. Сами хуки не пишут в Wiki.
+Напоминание о Wiki входит в [поставляемые хуки](HOOKS.md). Сами хуки не пишут в Wiki.
 
 ## researcher
 
-Попросите встроенный `$skill-installer` установить:
+**Claude Code:** установщик KISA из клона репозитория:
+
+```bash
+git clone --depth 1 https://github.com/howdeploy/kisa-stack.git "$STACK_TOOLS/kisa-stack"
+cd "$STACK_TOOLS/kisa-stack"
+./install.sh researcher --claude
+```
+
+**Codex:** попросите встроенный `$skill-installer` установить
 https://github.com/howdeploy/kisa-stack/tree/main/skills/researcher
 
-В новый сеанс должен попасть `$researcher`. Пусть агент проверит доступные
-web-инструменты; наличие Tavily не предполагается. Первый smoke-test — краткий
-ответ по публичному источнику со ссылкой, а не генерация без поиска.
+Прочитайте install.sh перед запуском. В новом сеансе должен появиться researcher.
+Пусть агент проверит доступные web-инструменты; наличие Tavily не предполагается.
+Первый smoke-test — краткий ответ по публичному источнику со ссылкой.
 
 ## Agentation
 
@@ -266,12 +343,13 @@ web-инструменты; наличие Tavily не предполагает�
 Глобальное подключение MCP:
 
 ```bash
-codex mcp add agentation -- npx -y agentation-mcp@1.2.0 server
+claude mcp add --scope user agentation -- npx -y agentation-mcp@1.2.0 server   # Claude Code
+codex mcp add agentation -- npx -y agentation-mcp@1.2.0 server                 # Codex
 ```
 
 Версия 1.2.0 — проверенная исходная версия этой сборки, не утверждение о latest.
 Если desktop не видит Node/npx, укажите абсолютные пути. Для медленного первого
-запуска установите startup_timeout_sec = 30, как в образце TOML.
+запуска в Codex установите startup_timeout_sec = 30, как в образце TOML.
 Проверяйте список сессий через MCP и `http://127.0.0.1:4747/health`.
 
 **Проектная часть:** выберите конкретное React-приложение, используйте его менеджер
@@ -293,13 +371,21 @@ dev-страницу и production build отдельно. Не размещай
 сервере. Для SSR без React выбирайте подходящую отдельную dev-интеграцию после
 проверки стека, не вставляйте JSX в чужой шаблон.
 
-В браузере создайте тестовую аннотацию. В Codex прочитайте её через MCP, проверьте
+В браузере создайте тестовую аннотацию. В агенте прочитайте её через MCP, проверьте
 текст и селектор. Обрабатывайте только сессию выбранного проекта. Постоянное
 наблюдение запускается отдельным запросом и не возникает само от установки MCP.
 
 ## MTGA и Remotion — по желанию
 
-MTGA:
+MTGA в Claude Code — плагин:
+
+```
+/plugin marketplace add howdeploy/MTGA
+/plugin install mtga@mtga
+/mtga:on
+```
+
+Выключение: `/mtga:off` до удаления плагина. В Codex:
 
 ```bash
 git clone https://github.com/howdeploy/MTGA.git "$STACK_TOOLS/MTGA"
@@ -320,5 +406,5 @@ Remotion: [официальный quickstart](https://www.remotion.dev/docs/). �
 изменения с backup и отмените только изменения этого обновления. Не восстанавливайте
 весь старый config поверх появившихся пользовательских настроек.
 
-Следующий шаг: [что делать после установки](AFTER-INSTALL.md) — входы, доверие
-к hooks и проектная настройка Agentation. Полная проверка: [VERIFY.md](VERIFY.md).
+Следующий шаг: [что делать после установки](AFTER-INSTALL.md) — входы, проверка
+hooks и проектная настройка Agentation. Полная проверка: [VERIFY.md](VERIFY.md).
