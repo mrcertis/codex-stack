@@ -18,3 +18,4 @@ installation-report.local.md
 .zaebal/
 *.jsonl
 *secret-audit*/
+.claude/

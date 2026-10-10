@@ -22,7 +22,7 @@ UserPromptSubmit напоминают агенту прочитать этот s
 
 Агент определяет папку проекта и запускает поставляемый prepare_project.py.
 Тот ставит **локально и сразу** grill-with-docs, grilling, domain-modeling и
-Impeccable. Установка Impeccable не требует заранее выбранного интерфейса.
+Impeccable: в `.claude/skills/` для Claude Code или `.agents/skills/` для Codex. Установка Impeccable не требует заранее выбранного интерфейса.
 Источник интервью — [mattpocock/skills](https://github.com/mattpocock/skills),
 дизайна — [Impeccable](https://impeccable.style/docs/).
 

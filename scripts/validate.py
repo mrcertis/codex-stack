@@ -2,6 +2,7 @@
 """Check the public distribution without reading any user configuration."""
 
 from pathlib import Path
+import json
 import re
 import sys
 import tomllib
@@ -9,9 +10,10 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
-    "README.md", "AGENTS.md", "plugins.md", "NOTICE.md", "LICENSE", ".gitignore",
+    "README.md", "AGENTS.md", "CLAUDE.md", "plugins.md", "NOTICE.md", "LICENSE", ".gitignore",
     "global-config/AGENTS.md", "global-config/PROJECTS.example.md",
-    "global-config/mcp.example.toml", "docs/AGENT-SETUP.md", "docs/INSTALL.md",
+    "global-config/mcp.example.toml", "global-config/CLAUDE.md",
+    "global-config/mcp.claude.example.json", "docs/AGENT-SETUP.md", "docs/INSTALL.md",
     "docs/USAGE.md", "docs/VERIFY.md", "scripts/validate.py",
     "docs/NEW-PROJECT.md", "docs/HOOKS.md", "docs/ZAEBAL.md",
     "docs/SECURITY-CHECK.md", "hooks/stack-context.py",
@@ -38,6 +40,11 @@ for name in sorted(EXPECTED):
             tomllib.loads(content)
         except tomllib.TOMLDecodeError as exc:
             errors.append(f"Invalid TOML in {name}: {exc}")
+    if name.endswith(".json"):
+        try:
+            json.loads(content)
+        except ValueError as exc:
+            errors.append(f"Invalid JSON in {name}: {exc}")
     # Focused accidental-disclosure checks, not a complete secrets audit.
     if name != "scripts/validate.py":
         for pattern in (r"/Users/[^/\s]+/", r"gh[pousr]_[A-Za-z0-9]{20,}",
@@ -57,4 +64,4 @@ for path in ROOT.rglob("*"):
 if errors:
     print("\n".join(errors), file=sys.stderr)
     sys.exit(1)
-print(f"PASS: {len(EXPECTED)} public files; local links, TOML and disclosure checks")
+print(f"PASS: {len(EXPECTED)} public files; local links, TOML/JSON and disclosure checks")
