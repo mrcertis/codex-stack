@@ -96,15 +96,38 @@ class InstallTests(unittest.TestCase):
             else:
                 self.assertEqual(data["hookSpecificOutput"]["hookEventName"], event)
 
-    def test_project_preparation_preserves_installed_set(self):
-        for name in (*prepare.INTERVIEW, "impeccable"):
-            skill = self.home / ".agents/skills" / name / "SKILL.md"
+    def test_mtga_block_survives_replacement(self):
+        block = "<!-- MTGA:BEGIN lang=ru -->\nstyle\n<!-- MTGA:END -->"
+        (self.home / "AGENTS.md").write_text(f"Old instruction\n\n{block}\n")
+        self.install()
+        agents = (self.home / "AGENTS.md").read_text()
+        self.assertNotIn("Old instruction", agents)
+        self.assertIn(block, agents)
+        self.install()
+        self.assertEqual(agents.count("MTGA:BEGIN"), (self.home / "AGENTS.md").read_text().count("MTGA:BEGIN"))
+
+    def test_claude_include_is_appended_once(self):
+        claude = Path(self.temp.name).resolve() / "claude home"
+        claude.mkdir()
+        (claude / "CLAUDE.md").write_text("# My own rules\n")
+        for _ in range(2):
+            installer.install(self.home, self.tools, self.wiki, apply=True, claude_home=claude)
+        text = (claude / "CLAUDE.md").read_text()
+        self.assertTrue(text.startswith("# My own rules\n"))
+        self.assertEqual(text.count(f"@{self.home}/AGENTS.md"), 1)
+        self.assertTrue((claude / "skills/stack-start/scripts/prepare_project.py").is_file())
+        self.install()
+        self.assertEqual((claude / "CLAUDE.md").read_text(), text)
+
+    def test_project_preparation_preserves_installed_skill(self):
+        for host, folder in prepare.SKILL_DIRS.items():
+            skill = self.home / folder / "impeccable/SKILL.md"
             skill.parent.mkdir(parents=True)
             skill.write_text("existing content")
-        with patch.object(prepare.subprocess, "run") as run:
-            prepare.prepare(self.home)
-            run.assert_not_called()
-        self.assertEqual((self.home / ".agents/skills/impeccable/SKILL.md").read_text(), "existing content")
+            with patch.object(prepare.subprocess, "run") as run:
+                prepare.prepare(self.home, host)
+                run.assert_not_called()
+            self.assertEqual(skill.read_text(), "existing content")
 
     def test_project_preparation_refuses_distribution_and_partial_skill(self):
         with patch.object(prepare.subprocess, "run") as run:

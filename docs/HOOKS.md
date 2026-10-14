@@ -12,8 +12,10 @@
 Хук читает имя события и проверяет наличие установленного stack-start. Не сохраняет
 prompt или transcript, не читает проекты и секреты, не запускает команды, не пишет
 в Wiki и не обращается в сеть. При запросе на новый проект он направляет агента
-к stack-start; агент подготавливает локальный набор, включая Impeccable, **до**
-интервью и выбора UI. Подробности — [NEW-PROJECT.md](NEW-PROJECT.md).
+к stack-start: агент ставит в проект Impeccable **до** интервью и выбора UI,
+затем предлагает `gsd-new-project`. Для существующего кода хук напоминает про
+`gsd-onboard`, для любой разработки — про `gsd-next` и четыре точки подтверждения.
+Подробности — [NEW-PROJECT.md](NEW-PROJECT.md).
 Схема: [официальные hooks Codex](https://learn.chatgpt.com/docs/hooks).
 
 ## Установка
@@ -32,6 +34,9 @@ python3 scripts/install_config.py --apply
 - полностью заменяет AGENTS.md настроенным публичным шаблоном;
 - размещает обработчик в `CODEX_HOME/hooks/codex-stack/`;
 - устанавливает автоматически выбираемый stack-start в `CODEX_HOME/skills/`;
+- сохраняет блок MTGA из прежнего AGENTS.md;
+- с `--claude-home` дописывает в CLAUDE.md строку `@~/.codex/AGENTS.md` и ставит
+  stack-start в `~/.claude/skills/`; хуки Claude Code не меняет;
 - добавляет свои записи в hooks.json, сохраняя остальные события и обработчики;
 - не меняет config.toml, PROJECTS.md, авторизацию и trust.
 

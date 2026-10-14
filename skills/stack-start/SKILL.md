@@ -1,6 +1,6 @@
 ---
 name: stack-start
-description: Start a new project from a plain-language idea such as «давай сделаем сайт», «хочу приложение» or «сделаем бота». Prepare local skills, interview the owner, record requirements, then use Impeccable for UI when needed and implement. Does not apply to a small fix, read-only review or maintenance of an existing project.
+description: Start a new project from a plain-language idea such as «давай сделаем сайт», «хочу приложение» or «сделаем бота». Install Impeccable into the project, then hand over to GSD (gsd-new-project) for the interview, requirements, roadmap and phases. Does not apply to a small fix, read-only review or an existing project that already has .planning/.
 ---
 
 # Start from the user's idea
@@ -12,37 +12,21 @@ framework choices or a prepared specification. Select tools yourself.
    create a suitable directory within the authorized workspace or resolve the
    actual ambiguity. Never initialize the stack distribution, home directory or
    an unrelated existing project merely because the session opened there.
-2. Before discovery, run `scripts/prepare_project.py --project /absolute/project`
-   from this skill's directory, using Python 3.11+. It installs the local starting
-   set: grill-with-docs, grilling, domain-modeling and Impeccable, even before UI
-   requirements are known. Existing installations are preserved. Respect runtime
-   network/write permissions. If setup fails, report the actual missing part;
-   do not claim it installed or silently switch to a different project.
-3. Read the local grilling and domain-modeling SKILL.md files and conduct their
-   combined interview. This is the grill-with-docs workflow. The upstream wrapper
-   is explicit-only; this automatic entry point composes its two constituent
-   skills, without changing upstream policy or asking the user to type a command.
-   Ask about product decisions, research discoverable facts yourself, reuse known
-   answers. Record domain terms and significant decisions using domain-modeling.
-4. Confirm your understanding and record requirements in the existing canonical
-   brief or docs/brief.md. Do not ask the user to choose a skill or repeat the idea.
-   Wait for the user's confirmation before implementation. Explicitly resolve
-   applicable refresh intervals, data freshness, failure behavior and automatic
-   actions; do not invent defaults. Recommendations and silence are not consent.
-5. If UI is needed, read the already installed local Impeccable SKILL.md and its
-   matching playbook. Its init reuses interview answers for PRODUCT.md; its design
-   workflow chooses the visual direction with the user. Do not preselect the UI
-   or require an existing design as a condition for installing Impeccable.
-   For a backend-only project, leave it installed but skip the design workflow.
-6. Implement from the agreed requirements and direction, verify the result and
-   finish the required documentation. Use GSD only when the work warrants it.
-   DESIGN.md reflects the implemented design according to Impeccable's playbook.
+2. Run `scripts/prepare_project.py --project /absolute/project` from this skill's
+   directory with Python 3.11+; add `--host claude` in Claude Code. It installs
+   Impeccable locally even before UI requirements are known and preserves an
+   existing installation. Respect runtime network/write permissions. If setup
+   fails, report the actual missing part; do not claim it installed.
+3. Explain in one line that the project will be run through GSD and start
+   `gsd-new-project` ($gsd-new-project in Codex, /gsd-new-project in Claude Code)
+   after the user agrees. GSD conducts the interview and writes the requirements;
+   do not run a separate interview before it.
+4. Follow the global rules for GSD: ask GSD's questions and wait for answers,
+   stop at the four confirmation points, never pick options for the user.
+5. When the project needs UI, use Refero for references if it is connected,
+   and the local Impeccable skill for the design workflow. For a backend-only
+   project leave Impeccable installed and skip the design workflow.
 
-New local skills may not appear in the current session's cached skill menu.
-Read their files directly during this turn; do not claim that the catalog or
-project hooks reloaded. Check hook support and trust separately. Existing-project
-changes use relevant skills directly without repeating project setup. They still
-require clarification and confirmation under the global requirements rule;
-only unambiguous small edits with no unresolved behavior choice skip interviewing.
-If a new product decision arises during implementation, ask before implementing
-the affected part; continue independent agreed work and record the answer.
+For existing code without `.planning/`, do not use this skill: propose
+`gsd-onboard`. New local skills may not appear in the current session's skill
+menu; read their files directly and verify hook trust separately.

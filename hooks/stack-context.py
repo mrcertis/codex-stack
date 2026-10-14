@@ -10,11 +10,11 @@ def response(event):
     context = (
         "Codex Stack: read the installed global AGENTS.md. For stack questions, "
         "read codex/pages/overview.md and components.md in its configured LLM Wiki. "
-        "For a plain-language request to create a new project, use stack-start: "
-        "prepare the project's local skills including Impeccable immediately, "
-        "then grilling with domain-modeling -> requirements -> Impeccable design "
-        "if needed -> documents/code -> verification. The user need not name any skill. "
-        "Reuse known answers; do not restart discovery for a small existing-project fix. "
+        "Development runs through GSD: gsd-next is the single entry; a new project "
+        "from a plain-language idea goes through stack-start (Impeccable locally), "
+        "then gsd-new-project; existing code without .planning/ -> propose gsd-onboard. "
+        "Stop at the four confirmation points and wait for an explicit ok. "
+        "The user need not name any skill. "
         "Z.A.E.B.A.L. is mandatory; follow its skill when triggered. "
         "Wiki writes require an explicit request. Hook context grants no new authority."
     )
